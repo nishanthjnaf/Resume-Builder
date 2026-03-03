@@ -1,4 +1,3 @@
-// Basic helpers
 function qs(selector, scope = document) {
   return scope.querySelector(selector);
 }
@@ -7,11 +6,9 @@ function qsa(selector, scope = document) {
   return Array.from(scope.querySelectorAll(selector));
 }
 
-// Initialization
 document.addEventListener("DOMContentLoaded", () => {
   const form = qs("#resumeForm");
 
-  // Buttons
   const addSkillBtn = qs("#addSkillBtn");
   const addExperienceBtn = qs("#addExperienceBtn");
   const addEducationBtn = qs("#addEducationBtn");
@@ -22,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const downloadBtn = qs("#downloadBtn");
   const themeToggleBtn = qs("#themeToggleBtn");
 
-  // Lists / containers
   const skillsList = qs("#skillsList");
   const experienceList = qs("#experienceList");
   const educationList = qs("#educationList");
@@ -34,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const experienceError = qs("#experienceError");
   const educationError = qs("#educationError");
 
-  // Templates
   const experienceTemplate = qs("#experienceTemplate");
   const educationTemplate = qs("#educationTemplate");
   const projectTemplate = qs("#projectTemplate");
@@ -45,13 +40,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const summaryCounter = qs("#summaryCounter");
   const profilePhotoInput = qs("#profilePhoto");
 
-  // --- Summary character counter ---
   summary.addEventListener("input", () => {
     const len = summary.value.length;
     summaryCounter.textContent = `${len} / 500`;
   });
 
-  // --- Skills handling ---
   addSkillBtn.addEventListener("click", () => {
     const input = qs("#skillInput");
     const value = input.value.trim();
@@ -76,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
     input.value = "";
   });
 
-  // --- Dynamic list helpers ---
   function addItemFromTemplate(template, list) {
     const clone = template.content.cloneNode(true);
     list.appendChild(clone);
@@ -94,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Experience / Education / Projects / Extras add buttons
   addExperienceBtn.addEventListener("click", () => {
     addItemFromTemplate(experienceTemplate, experienceList);
   });
@@ -115,14 +106,12 @@ document.addEventListener("DOMContentLoaded", () => {
     addItemFromTemplate(languageTemplate, languageList);
   });
 
-  // Enable remove buttons in all dynamic containers
   handleRemoveButtons(experienceList);
   handleRemoveButtons(educationList);
   handleRemoveButtons(projectList);
   handleRemoveButtons(certificationList);
   handleRemoveButtons(languageList);
 
-  // Project reorder controls (move up/down)
   projectList.addEventListener("click", (e) => {
     const target = e.target;
     const item = target.closest(".project-item");
@@ -141,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Theme toggle (bonus) ---
   function setTheme(theme) {
     document.body.setAttribute("data-bs-theme", theme);
     localStorage.setItem("rb_theme", theme);
@@ -157,7 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setTheme(current === "light" ? "dark" : "light");
   });
 
-  // --- Profile photo (bonus) ---
   let profilePhotoDataUrl = "";
   profilePhotoInput.addEventListener("change", () => {
     const file = profilePhotoInput.files && profilePhotoInput.files[0];
@@ -170,7 +157,6 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // --- Validation helpers ---
   function validatePhone(value) {
     const digits = value.replace(/\D/g, "");
     return digits.length >= 10;
@@ -187,7 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const linkedin = qs("#linkedin");
     const portfolio = qs("#portfolio");
 
-    // Use standard required validation
     [fullName, email, phone, summary, roleTitle, location, linkedin, portfolio].forEach((el) => {
       if (!el.value.trim()) {
         el.classList.add("is-invalid");
@@ -197,19 +182,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Email format
     if (email.value && !email.checkValidity()) {
       email.classList.add("is-invalid");
       isValid = false;
     }
 
-    // Phone basic rule
     if (!validatePhone(phone.value)) {
       phone.classList.add("is-invalid");
       isValid = false;
     }
 
-    // Skills required (at least one badge)
     const skillBadges = qsa(".resume-skill-badge", skillsList);
     if (skillBadges.length === 0) {
       skillsError.classList.remove("d-none");
@@ -218,7 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
       skillsError.classList.add("d-none");
     }
 
-    // Experience required (at least one item with some content)
     const expItems = qsa(".experience-item", experienceList);
     const hasExp = expItems.some((item) => {
       return (
@@ -234,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
       experienceError.classList.add("d-none");
     }
 
-    // Education required (at least one item with some content)
     const eduItems = qsa(".education-item", educationList);
     const hasEdu = eduItems.some((item) => {
       return (
@@ -252,14 +232,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return isValid;
   }
 
-  // Remove invalid style on input
   qsa("input, textarea", form).forEach((el) => {
     el.addEventListener("input", () => {
       el.classList.remove("is-invalid");
     });
   });
 
-  // --- Collect data from form ---
   function collectFormData() {
     const data = {
       personal: {
@@ -308,7 +286,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return data;
   }
 
-  // --- Render preview ---
   function renderPreview(data) {
     const { personal } = data;
     if (!personal.fullName && !personal.email && !personal.phone) {
@@ -499,7 +476,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-  // --- Form submit: validate and render ---
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -509,7 +485,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPreview(data);
   });
 
-  // --- Clear form ---
   clearBtn.addEventListener("click", () => {
     if (!confirm("Clear all form data?")) return;
     form.reset();
@@ -531,7 +506,6 @@ document.addEventListener("DOMContentLoaded", () => {
     educationError.classList.add("d-none");
   });
 
-  // --- Download as PDF (using print) ---
   downloadBtn.addEventListener("click", () => {
     // Ensure preview is updated before print
     const data = collectFormData();
@@ -539,4 +513,5 @@ document.addEventListener("DOMContentLoaded", () => {
     window.print();
   });
 });
+
 
